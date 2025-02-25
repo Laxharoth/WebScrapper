@@ -130,7 +130,11 @@ fn fulfill_attribute_filter(element: Option<&Element>, attributes: &AttributeFil
     };
     match attributes.filter_type {
         FilterType::And => attributes.filter.iter().all(|(key, value)| {
-            element.attributes.get(key).map_or(false, |v| v.clone().unwrap().eq(value))
+            match key.to_lowercase().as_str() {
+                "class" => return element.classes.iter().any(|c| c.eq(value)),
+                "id" => return element.id == Some(value.clone()),
+                _ => element.attributes.get(key).map_or(false, |v| v.clone().unwrap().eq(value)),
+            }
         }),
         FilterType::Or => attributes.filter.iter().any(|(key, value)| {
             element.attributes.get(key).map_or(false, |v| v.clone().unwrap().eq(value))
@@ -260,6 +264,40 @@ mod tests {
         };
         assert!(fulfill_attribute_filter(element, &attribute_filter), "should return true as at least one attribute match");
         assert!(!fulfill_attribute_filter(element, &attribute_filter_fail), "should return false as no attribute match");
+    }
+
+    #[test]
+    fn test_fulfill_attribute_filter_with_id_and_class() {
+        let dom = init_dom("<div id='test_id' class='test_class'></div>");
+        let element = dom.children.get(0).unwrap().element();
+
+        // Test for id attribute
+        let attribute_filter_id = AttributeFilter {
+            filter: vec![("id".to_string(), "test_id".to_string())],
+            filter_type: FilterType::And,
+        };
+        assert!(fulfill_attribute_filter(element, &attribute_filter_id), "should return true as id attribute matches");
+
+        // Test for class attribute
+        let attribute_filter_class = AttributeFilter {
+            filter: vec![("class".to_string(), "test_class".to_string())],
+            filter_type: FilterType::And,
+        };
+        assert!(fulfill_attribute_filter(element, &attribute_filter_class), "should return true as class attribute matches");
+
+        // Test for non-matching id attribute
+        let attribute_filter_id_fail = AttributeFilter {
+            filter: vec![("id".to_string(), "wrong_id".to_string())],
+            filter_type: FilterType::And,
+        };
+        assert!(!fulfill_attribute_filter(element, &attribute_filter_id_fail), "should return false as id attribute does not match");
+
+        // Test for non-matching class attribute
+        let attribute_filter_class_fail = AttributeFilter {
+            filter: vec![("class".to_string(), "wrong_class".to_string())],
+            filter_type: FilterType::And,
+        };
+        assert!(!fulfill_attribute_filter(element, &attribute_filter_class_fail), "should return false as class attribute does not match");
     }
 
     #[test]
