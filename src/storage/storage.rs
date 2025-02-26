@@ -17,11 +17,6 @@ pub enum FileFormat {
     Yaml,
 }
 
-pub enum Encoding {
-    Utf8,
-    Ascii,
-}
-
 /// Options for configuring storage behavior. Some file 
 /// 
 /// # Fields
@@ -45,10 +40,26 @@ pub struct StorageOptions {
     pub include_attributes: Option<Vec<String>>, // List of attribute names to include, None means all attributes
     pub include_text_content: Option<bool>,
     pub include_tag_names: Option<bool>,
-    pub include_metadata: Option<bool>,
+    // pub include_metadata: Option<bool>,
     // pub custom_data_patterns: Option<Vec<String>>, // List of custom data extraction patterns
-    pub pretty_print: Option<bool>,
+    pub pretty_print: Option<bool>, // For JSON and XML formats
     pub delimiter: Option<String>, // For CSV format
+}
+
+impl StorageOptions  {
+    pub fn new(filename:String) -> Self {
+        Self {
+            file_name: filename,
+            file_format: None,
+            include_tag_content: None,
+            include_attributes: None,
+            include_text_content: None,
+            include_tag_names: None,
+            // include_metadata: None,
+            pretty_print: None,
+            delimiter: None,
+        }
+    } 
 }
 
 pub struct ScraperGenerator<'a> {
