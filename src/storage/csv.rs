@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::default;
 
 use super::storage::ScraperGenerator;
 use super::storage::StorageOptions;
