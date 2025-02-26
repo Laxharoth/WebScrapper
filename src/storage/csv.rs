@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::default;
 
 use super::storage::ScraperGenerator;
 use super::storage::StorageOptions;
@@ -21,16 +22,17 @@ impl<'a> ScraperCSVGenerator<'a> {
     
     fn first_gen(&mut self) -> Option<String> {
         let mut csv_order: HashSet<String> = HashSet::new();
+        let delimeter = self.tags.options.delimiter.clone().unwrap_or(",".to_string());
         if !self.tags.options.include_tag_content.unwrap_or(false){
-            csv_order.insert("text".to_string());
-            return Some("text".to_string());
+            self.order.push("text".to_string());
+            return Some("text\n".to_string());
         }
-        if self.tags.options.include_tag_names.unwrap_or(false){
-            csv_order.insert("tag".to_string());
+        if self.tags.options.include_tag_names.unwrap_or(true){
+            self.order.push("tag".to_string());
         }
         if let Some(attributes) = &self.tags.options.include_attributes{
             for attribute in attributes{
-                csv_order.insert(attribute.to_string());
+                self.order.push(attribute.to_string());
             }
         }
         else {
@@ -51,17 +53,37 @@ impl<'a> ScraperCSVGenerator<'a> {
             self.order.push(key);
         }
         self.order.push("text".to_string());
-        return Some(self.order.join(","));
+        let mut header = self.order.join(&delimeter).to_owned();
+        header.push_str("\n");
+        return Some(header);
     }
 }
 
 impl<'a> Iterator for ScraperCSVGenerator<'a> {
     type Item = String;
     fn next(&mut self) -> Option<Self::Item> {
-        //TODO 
         if self.first{
             self.first = false;
             return self.first_gen();
+        }
+        if self.tags.index < self.tags.data.len() {
+            let tag = Dom::parse(&self.tags.data[self.tags.index]).unwrap().children[0].element().unwrap().clone();
+            let delimeter = self.tags.options.delimiter.clone().unwrap_or(",".to_string());
+            let mut csv_line: Vec<String> = vec![];
+            for header in self.order.iter(){
+                match header.as_str(){
+                    "tag" => csv_line.push(tag.name.clone()),
+                    "class" => csv_line.push(tag.classes.join(" ")),
+                    "id" => csv_line.push(tag.id.clone().unwrap_or("".to_string())),
+                    "text" => csv_line.push(tag.children.iter().map(|node|node.text().unwrap_or("")).collect::<Vec<&str>>().join(" ")),
+                    default => csv_line.push(tag.attributes.get(default).unwrap_or(&Some("".to_string())).clone().unwrap_or("".to_string()))
+                }
+            }
+            let a = 
+            self.tags.index += 1;
+            let mut row = csv_line.join(&delimeter).to_owned();
+            row.push_str("\n");
+            return Some(row);
         }
         None
     }    
@@ -81,6 +103,7 @@ mod tests {
             ..StorageOptions::new("test.csv".to_string())
         };
         let mut generator = ScraperCSVGenerator::new(&data, &options);
+        assert_eq!(generator.next(), Some("text\n".to_string()));
         assert_eq!(generator.next(), None);
     }
 
@@ -157,6 +180,7 @@ mod tests {
         let options = StorageOptions {
             file_format: Some(FileFormat::Csv),
             include_tag_content: Some(true),
+            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
             delimiter: Some(";".to_string()),
             ..StorageOptions::new("test.csv".to_string())
         };
