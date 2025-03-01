@@ -23,7 +23,7 @@ impl<'a> Iterator for ScraperJSONGenerator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::super::storage::{FileFormat};
+    use super::super::storage::FileFormat;
 
     #[test]
     fn test_scraper_json_generator_empty() {
@@ -53,11 +53,11 @@ mod tests {
             pretty_print: Some(false),
             ..StorageOptions::new("test.json".to_string())
         };
-        let mut generator = ScraperJSONGenerator::new(&data, & options);
+        let mut generator = ScraperJSONGenerator::new(&data, &options);
         assert_eq!(generator.next(), Some("[".to_string()));
-        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":"test","id":"div1","data-role":"main","text":"hello world"},"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"{"tag":"span","class":"test","id":"span1","data-role":"secondary","text":"hello rust"},"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":"test","id":"div2","data-role":"main","text":"goodbye world"}"#.to_string()));
+        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":["test"],"id":"div1","data-role":"main","text":"hello world"},"#.to_string()));
+        assert_eq!(generator.next(), Some(r#"{"tag":"span","class":["test"],"id":"span1","data-role":"secondary","text":"hello rust"},"#.to_string()));
+        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":["test"],"id":"div2","data-role":"main","text":"goodbye world"}"#.to_string()));
         assert_eq!(generator.next(), Some("]".to_string()));
     }
 
@@ -79,9 +79,9 @@ mod tests {
         };
         let mut generator = ScraperJSONGenerator::new(&data, &options);
         assert_eq!(generator.next(), Some("[".to_string()));
-        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":"test","data-role":"main","text":"hello world"},"#.to_string())); // Missing id
-        assert_eq!(generator.next(), Some(r#"{"tag":"span","class":"test","id":"span1","text":"hello rust"},"#.to_string())); // Missing data-role
-        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":"test","id":"div2","data-role":"main","text":"goodbye world"}"#.to_string()));
+        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":["test"],"data-role":"main","text":"hello world"},"#.to_string())); // Missing id
+        assert_eq!(generator.next(), Some(r#"{"tag":"span","class":["test"],"id":"span1","text":"hello rust"},"#.to_string())); // Missing data-role
+        assert_eq!(generator.next(), Some(r#"{"tag":"div","class":["test"],"id":"div2","data-role":"main","text":"goodbye world"}"#.to_string()));
         assert_eq!(generator.next(), Some("]".to_string()));
     }
 
@@ -119,7 +119,7 @@ mod tests {
         let options = StorageOptions {
             file_format: Some(FileFormat::Json),
             include_tag_content: Some(true),
-            include_attributes: None,
+            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
             include_text_content: Some(true),
             include_tag_names: Some(true),
             pretty_print: Some(true),
@@ -132,27 +132,76 @@ mod tests {
         }
         let expected = r#"[
   {
-    "tag": "div",
-    "class": "test",
-    "id": "div1",
-    "data-role": "main",
-    "text": "hello world"
+    "tag":"div",
+    "class":["test"],
+    "id":"div1",
+    "data-role":"main",
+    "text":"hello world"
   },
   {
-    "tag": "span",
-    "class": "test",
-    "id": "span1",
-    "data-role": "secondary",
-    "text": "hello rust"
+    "tag":"span",
+    "class":["test"],
+    "id":"span1",
+    "data-role":"secondary",
+    "text":"hello rust"
   },
   {
-    "tag": "div",
-    "class": "test",
-    "id": "div2",
-    "data-role": "main",
-    "text": "goodbye world"
+    "tag":"div",
+    "class":["test"],
+    "id":"div2",
+    "data-role":"main",
+    "text":"goodbye world"
   }
-]"#.to_string();
+]
+"#.to_string();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_scraper_json_generator_pretty_print_multiple_classes() {
+        let data = vec![
+            "<div class='test example' id='div1' data-role='main'>hello world</div>".to_string(),
+            "<span class='test example' id='span1' data-role='secondary'>hello rust</span>".to_string(),
+            "<div class='test example' id='div2' data-role='main'>goodbye world</div>".to_string(),
+        ];
+        let options = StorageOptions {
+            file_format: Some(FileFormat::Json),
+            include_tag_content: Some(true),
+            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
+            include_text_content: Some(true),
+            include_tag_names: Some(true),
+            pretty_print: Some(true),
+            ..StorageOptions::new("test.json".to_string())
+        };
+        let mut generator = ScraperJSONGenerator::new(&data, &options);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"[
+  {
+    "tag":"div",
+    "class":["test", "example"],
+    "id":"div1",
+    "data-role":"main",
+    "text":"hello world"
+  },
+  {
+    "tag":"span",
+    "class":["test", "example"],
+    "id":"span1",
+    "data-role":"secondary",
+    "text":"hello rust"
+  },
+  {
+    "tag":"div",
+    "class":["test", "example"],
+    "id":"div2",
+    "data-role":"main",
+    "text":"goodbye world"
+  }
+]
+"#.to_string();
         assert_eq!(result, expected);
     }
 }
