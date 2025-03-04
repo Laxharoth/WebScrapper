@@ -152,8 +152,7 @@ mod tests {
     "data-role":"main",
     "text":"goodbye world"
   }
-]
-"#.to_string();
+]"#.to_string();
         assert_eq!(result, expected);
     }
 
@@ -200,8 +199,7 @@ mod tests {
     "data-role":"main",
     "text":"goodbye world"
   }
-]
-"#.to_string();
+]"#.to_string();
         assert_eq!(result, expected);
     }
 }
