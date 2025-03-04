@@ -27,6 +27,10 @@ impl<'a> ScraperJSONGenerator<'a> {
         }
     }
 
+    fn pretty_print(&self) -> bool {
+        self.tags.options.pretty_print.unwrap_or(false)
+    }
+
     fn first_gen(&mut self) -> String {
         // tag content only required if option is true
         if self.tags.options.include_tag_content.unwrap_or(false) {
@@ -67,7 +71,7 @@ impl<'a> ScraperJSONGenerator<'a> {
 
     fn prettify(&self, line: String) -> String {
         let mut result = String::new();
-        if self.tags.options.pretty_print.unwrap_or(false) {
+        if self.pretty_print() {
             result.push_str("\n");
         }
         for _ in 0..self.identation {
@@ -85,7 +89,7 @@ impl<'a> ScraperJSONGenerator<'a> {
     }
     
     fn handle_html_classes_extract(&self, tag: &Element, json_row: &mut String, header: &String) {
-        let separator = if self.tags.options.pretty_print.unwrap_or(false) {
+        let separator = if self.pretty_print() {
             ", "
         } else {
             ","
@@ -159,7 +163,7 @@ impl<'a> Iterator for ScraperJSONGenerator<'a> {
             self.first = false;
             let header = self.first_gen();
             let header = header;
-            if self.tags.options.pretty_print.unwrap_or(false) {
+            if self.pretty_print() {
                 self.identation += 1;
             }
             return Some(header);
@@ -173,7 +177,7 @@ impl<'a> Iterator for ScraperJSONGenerator<'a> {
                 .clone();
             let mut json_row = String::new();
             json_row.push_str(self.prettify("{".to_string()).as_str());
-            if self.tags.options.pretty_print.unwrap_or(false) {
+            if self.pretty_print() {
                 self.identation += 1;
             }
             for (i,header) in self.order.iter().enumerate() {
@@ -194,7 +198,7 @@ impl<'a> Iterator for ScraperJSONGenerator<'a> {
                 }
                 json_row.push_str(json_append.as_str());
             }
-            if self.tags.options.pretty_print.unwrap_or(false) {
+            if self.pretty_print() {
                 self.identation -= 1;
             }
             let mut row_tail = "}".to_string();
@@ -207,7 +211,7 @@ impl<'a> Iterator for ScraperJSONGenerator<'a> {
         }
         if self.last {
             self.last = false;
-            if self.tags.options.pretty_print.unwrap_or(false) {
+            if self.pretty_print() {
                 self.identation -= 1;
             }
             let footer = self.prettify("]".to_string());
