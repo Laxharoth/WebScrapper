@@ -36,7 +36,10 @@ mod tests {
             ..StorageOptions::new("test.xml".to_string())
         };
         let mut generator = ScraperXMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string()));
+        assert_eq!(
+            generator.next(),
+            Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string())
+        );
         assert_eq!(generator.next(), None);
     }
 
@@ -50,17 +53,42 @@ mod tests {
         let options = StorageOptions {
             file_format: Some(FileFormat::Xml),
             include_tag_content: Some(true),
-            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
+            include_attributes: Some(vec![
+                "class".to_string(),
+                "id".to_string(),
+                "data-role".to_string(),
+            ]),
             include_text_content: Some(true),
             include_tag_names: Some(true),
             pretty_print: Some(false),
             ..StorageOptions::new("test.xml".to_string())
         };
         let mut generator = ScraperXMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><tag>div</tag><class>test</class><id>div1</id><data-role>main</data-role><text>hello world</text></data>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><tag>span</tag><class>test</class><id>span1</id><data-role>secondary</data-role><text>hello rust</text></data>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><tag>div</tag><class>test</class><id>div2</id><data-role>main</data-role><text>goodbye world</text></data>"#.to_string()));
+        assert_eq!(
+            generator.next(),
+            Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string())
+        );
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>div</tag><classes><class>test</class></classes><id>div1</id><data-role>main</data-role><text>hello world</text></data>"#
+                    .to_string()
+            )
+        );
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>span</tag><classes><class>test</class></classes><id>span1</id><data-role>secondary</data-role><text>hello rust</text></data>"#
+                    .to_string()
+            )
+        );
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>div</tag><classes><class>test</class></classes><id>div2</id><data-role>main</data-role><text>goodbye world</text></data>"#
+                    .to_string()
+            )
+        );
         assert_eq!(generator.next(), None);
     }
 
@@ -74,17 +102,42 @@ mod tests {
         let options = StorageOptions {
             file_format: Some(FileFormat::Xml),
             include_tag_content: Some(true),
-            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
+            include_attributes: Some(vec![
+                "class".to_string(),
+                "id".to_string(),
+                "data-role".to_string(),
+            ]),
             include_text_content: Some(true),
             include_tag_names: Some(true),
             pretty_print: Some(false),
             ..StorageOptions::new("test.xml".to_string())
         };
         let mut generator = ScraperXMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><tag>div</tag><class>test</class><data-role>main</data-role><text>hello world</text></data>"#.to_string())); // Missing id
-        assert_eq!(generator.next(), Some(r#"<data><tag>span</tag><class>test</class><id>span1</id><text>hello rust</text></data>"#.to_string())); // Missing data-role
-        assert_eq!(generator.next(), Some(r#"<data><tag>div</tag><class>test</class><id>div2</id><data-role>main</data-role><text>goodbye world</text></data>"#.to_string()));
+        assert_eq!(
+            generator.next(),
+            Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string())
+        );
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>div</tag><classes><class>test</class></classes><data-role>main</data-role><text>hello world</text></data>"#
+                    .to_string()
+            )
+        ); // Missing id
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>span</tag><classes><class>test</class></classes><id>span1</id><text>hello rust</text></data>"#
+                    .to_string()
+            )
+        ); // Missing data-role
+        assert_eq!(
+            generator.next(),
+            Some(
+                r#"<data><tag>div</tag><classes><class>test</class></classes><id>div2</id><data-role>main</data-role><text>goodbye world</text></data>"#
+                    .to_string()
+            )
+        );
         assert_eq!(generator.next(), None);
     }
 
@@ -105,10 +158,22 @@ mod tests {
             ..StorageOptions::new("test.xml".to_string())
         };
         let mut generator = ScraperXMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><text>hello world</text></data>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><text>hello rust</text></data>"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"<data><text>goodbye world</text></data>"#.to_string()));
+        assert_eq!(
+            generator.next(),
+            Some(r#"<?xml version="1.0" encoding="UTF-8"?>"#.to_string())
+        );
+        assert_eq!(
+            generator.next(),
+            Some(r#"<data><text>hello world</text></data>"#.to_string())
+        );
+        assert_eq!(
+            generator.next(),
+            Some(r#"<data><text>hello rust</text></data>"#.to_string())
+        );
+        assert_eq!(
+            generator.next(),
+            Some(r#"<data><text>goodbye world</text></data>"#.to_string())
+        );
         assert_eq!(generator.next(), None);
     }
 
@@ -122,17 +187,45 @@ mod tests {
         let options = StorageOptions {
             file_format: Some(FileFormat::Xml),
             include_tag_content: Some(true),
-            include_attributes: None,
+            include_attributes: Some(vec!["class".to_string(), "id".to_string(), "data-role".to_string()]),
             include_text_content: Some(true),
             include_tag_names: Some(true),
             pretty_print: Some(true),
             ..StorageOptions::new("test.xml".to_string())
         };
         let mut generator = ScraperXMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".to_string()));
-        assert_eq!(generator.next(), Some("<data>\n  <tag>div</tag>\n  <class>test</class>\n  <id>div1</id>\n  <data-role>main</data-role>\n  <text>hello world</text>\n</data>".to_string()));
-        assert_eq!(generator.next(), Some("<data>\n  <tag>span</tag>\n  <class>test</class>\n  <id>span1</id>\n  <data-role>secondary</data-role>\n  <text>hello rust</text>\n</data>".to_string()));
-        assert_eq!(generator.next(), Some("<data>\n  <tag>div</tag>\n  <class>test</class>\n  <id>div2</id>\n  <data-role>main</data-role>\n  <text>goodbye world</text>\n</data>".to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <tag>div</tag>
+  <classes>
+    <class>test</class>
+  </classes>
+  <id>div1</id>
+  <data-role>main</data-role>
+  <text>hello world</text>
+</data>
+<data>
+  <tag>span</tag>
+  <classes>
+    <class>test</class>
+  </classes>
+  <id>span1</id>
+  <data-role>secondary</data-role>
+  <text>hello rust</text>
+</data>
+<data>
+  <tag>div</tag>
+  <classes>
+    <class>test</class>
+  </classes>
+  <id>div2</id>
+  <data-role>main</data-role>
+  <text>goodbye world</text>
+</data>"#.to_string();
+        assert_eq!(result, expected);
     }
 }
