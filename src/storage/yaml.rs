@@ -51,10 +51,33 @@ mod tests {
             ..StorageOptions::new("test.yaml".to_string())
         };
         let mut generator = ScraperYAMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n    id: div1\n    data-role: main\n    text: hello world"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: span\n    class:\n      - test\n    id: span1\n    data-role: secondary\n    text: hello rust"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n    id: div2\n    data-role: main\n    text: goodbye world"#.to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"data:
+  tag: div
+  class: 
+    - test
+  id: div1
+  data-role: main
+  text: hello world
+data:
+  tag: span
+  class: 
+    - test
+  id: span1
+  data-role: secondary
+  text: hello rust
+data:
+  tag: div
+  class: 
+    - test
+  id: div2
+  data-role: main
+  text: goodbye world
+"#.to_string();
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -73,10 +96,31 @@ mod tests {
             ..StorageOptions::new("test.yaml".to_string())
         };
         let mut generator = ScraperYAMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n    data-role: main\n    text: hello world"#.to_string())); // Missing id
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: span\n    class:\n      - test\n    id: span1\n    text: hello rust"#.to_string())); // Missing data-role
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n    id: div2\n    data-role: main\n    text: goodbye world"#.to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"data:
+  tag: div
+  class: 
+    - test
+  data-role: main
+  text: hello world
+data:
+  tag: span
+  class: 
+    - test
+  id: span1
+  text: hello rust
+data:
+  tag: div
+  class: 
+    - test
+  id: div2
+  data-role: main
+  text: goodbye world
+"#.to_string();
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -95,10 +139,18 @@ mod tests {
             ..StorageOptions::new("test.yaml".to_string())
         };
         let mut generator = ScraperYAMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"data:\n  - text: hello world"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - text: hello rust"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - text: goodbye world"#.to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"data:
+  text: hello world
+data:
+  text: hello rust
+data:
+  text: goodbye world
+"#.to_string();
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -117,10 +169,36 @@ mod tests {
             ..StorageOptions::new("test.yaml".to_string())
         };
         let mut generator = ScraperYAMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n      - example\n    id: div1\n    data-role: main\n    text: hello world"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: span\n    class:\n      - test\n      - example\n    id: span1\n    data-role: secondary\n    text: hello rust"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    class:\n      - test\n      - example\n    id: div2\n    data-role: main\n    text: goodbye world"#.to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"data:
+  tag: div
+  class: 
+    - test
+    - example
+  id: div1
+  data-role: main
+  text: hello world
+data:
+  tag: span
+  class: 
+    - test
+    - example
+  id: span1
+  data-role: secondary
+  text: hello rust
+data:
+  tag: div
+  class: 
+    - test
+    - example
+  id: div2
+  data-role: main
+  text: goodbye world
+"#.to_string();
+        assert_eq!(result, expected);
     }
 
     #[test]
@@ -139,9 +217,26 @@ mod tests {
             ..StorageOptions::new("test.yaml".to_string())
         };
         let mut generator = ScraperYAMLGenerator::new(&data, &options);
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    id: div1\n    data-role: main\n    text: hello world"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: span\n    id: span1\n    data-role: secondary\n    text: hello rust"#.to_string()));
-        assert_eq!(generator.next(), Some(r#"data:\n  - tag: div\n    id: div2\n    data-role: main\n    text: goodbye world"#.to_string()));
-        assert_eq!(generator.next(), None);
+        let mut result = String::new();
+        while let Some(line) = generator.next() {
+            result.push_str(&line);
+        }
+        let expected = r#"data:
+  tag: div
+  id: div1
+  data-role: main
+  text: hello world
+data:
+  tag: span
+  id: span1
+  data-role: secondary
+  text: hello rust
+data:
+  tag: div
+  id: div2
+  data-role: main
+  text: goodbye world
+"#.to_string();
+        assert_eq!(result, expected);
     }
 }
