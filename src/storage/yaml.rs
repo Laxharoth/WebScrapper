@@ -56,26 +56,26 @@ mod tests {
             result.push_str(&line);
         }
         let expected = r#"data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
-  id: div1
-  data-role: main
-  text: hello world
+  - id: div1
+  - data-role: main
+  - text: hello world
 data:
-  tag: span
-  class: 
+  - tag: span
+  - class: 
     - test
-  id: span1
-  data-role: secondary
-  text: hello rust
+  - id: span1
+  - data-role: secondary
+  - text: hello rust
 data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
-  id: div2
-  data-role: main
-  text: goodbye world
+  - id: div2
+  - data-role: main
+  - text: goodbye world
 "#.to_string();
         assert_eq!(result, expected);
     }
@@ -101,24 +101,24 @@ data:
             result.push_str(&line);
         }
         let expected = r#"data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
-  data-role: main
-  text: hello world
+  - data-role: main
+  - text: hello world
 data:
-  tag: span
-  class: 
+  - tag: span
+  - class: 
     - test
-  id: span1
-  text: hello rust
+  - id: span1
+  - text: hello rust
 data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
-  id: div2
-  data-role: main
-  text: goodbye world
+  - id: div2
+  - data-role: main
+  - text: goodbye world
 "#.to_string();
         assert_eq!(result, expected);
     }
@@ -144,11 +144,11 @@ data:
             result.push_str(&line);
         }
         let expected = r#"data:
-  text: hello world
+  - text: hello world
 data:
-  text: hello rust
+  - text: hello rust
 data:
-  text: goodbye world
+  - text: goodbye world
 "#.to_string();
         assert_eq!(result, expected);
     }
@@ -174,29 +174,29 @@ data:
             result.push_str(&line);
         }
         let expected = r#"data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
     - example
-  id: div1
-  data-role: main
-  text: hello world
+  - id: div1
+  - data-role: main
+  - text: hello world
 data:
-  tag: span
-  class: 
+  - tag: span
+  - class: 
     - test
     - example
-  id: span1
-  data-role: secondary
-  text: hello rust
+  - id: span1
+  - data-role: secondary
+  - text: hello rust
 data:
-  tag: div
-  class: 
+  - tag: div
+  - class: 
     - test
     - example
-  id: div2
-  data-role: main
-  text: goodbye world
+  - id: div2
+  - data-role: main
+  - text: goodbye world
 "#.to_string();
         assert_eq!(result, expected);
     }
@@ -222,20 +222,20 @@ data:
             result.push_str(&line);
         }
         let expected = r#"data:
-  tag: div
-  id: div1
-  data-role: main
-  text: hello world
+  - tag: div
+  - id: div1
+  - data-role: main
+  - text: hello world
 data:
-  tag: span
-  id: span1
-  data-role: secondary
-  text: hello rust
+  - tag: span
+  - id: span1
+  - data-role: secondary
+  - text: hello rust
 data:
-  tag: div
-  id: div2
-  data-role: main
-  text: goodbye world
+  - tag: div
+  - id: div2
+  - data-role: main
+  - text: goodbye world
 "#.to_string();
         assert_eq!(result, expected);
     }
