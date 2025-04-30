@@ -41,7 +41,7 @@ pub struct ScrapeOptions {
     pub text_exclude: Option<TextFilter>,
 }
 
-pub fn scrape(raw_html: &str, options:ScrapeOptions) -> Vec<String> {
+pub fn scrape(raw_html: &str, options:&ScrapeOptions) -> Vec<String> {
     let html = Dom::parse(raw_html).unwrap();
     let mut current:Vec<html_parser::Node> = Vec::new();
     let mut result:Vec<String> = Vec::new();
@@ -359,7 +359,7 @@ mod tests {
             text_include: None,
             text_exclude: None,
         };
-        let result1 = scrape(raw_html, options1);
+        let result1 = scrape(raw_html, &options1);
         assert_eq!(result1, vec!["<div class='test' id='div1' data-role='main'>hello world</div>", "<div class='test' id='div2' data-role='main'>goodbye world</div>"]);
 
         // Case 2: Filter by tag and id
@@ -376,7 +376,7 @@ mod tests {
             text_include: None,
             text_exclude: None,
         };
-        let result2 = scrape(raw_html, options2);
+        let result2 = scrape(raw_html, &options2);
         assert_eq!(result2, vec!["<span class='test' id='span1' data-role='secondary'>hello rust</span>"]);
 
         // Case 3: Filter by text include
@@ -394,7 +394,7 @@ mod tests {
             }),
             text_exclude: None,
         };
-        let result3 = scrape(raw_html, options3);
+        let result3 = scrape(raw_html, &options3);
         assert_eq!(result3, vec![
             "<div class='test' id='div1' data-role='main'>hello world</div>",
             "<span class='test' id='span1' data-role='secondary'>hello rust</span>",
@@ -416,7 +416,7 @@ mod tests {
             text_include: None,
             text_exclude: None,
         };
-        let result4 = scrape(raw_html, options4);
+        let result4 = scrape(raw_html, &options4);
         assert_eq!(result4, vec![
             "<div class='test' id='div1' data-role='main'>hello world</div>",
             "<div class='test' id='div2' data-role='main'>goodbye world</div>",
@@ -443,7 +443,7 @@ mod tests {
             }),
             text_exclude: None,
         };
-        let result5 = scrape(raw_html, options5);
+        let result5 = scrape(raw_html, &options5);
         assert_eq!(result5, vec![
             "<div class='test' id='div1' data-role='main'>hello world</div>",
             "<div class='test' id='div2' data-role='main'>goodbye world</div>"
