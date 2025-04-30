@@ -7,6 +7,7 @@ use super::json;
 use super::csv;
 use super::xml;
 use super::yaml;
+use super::custom;
 
 
 pub enum FileFormat {
@@ -15,6 +16,7 @@ pub enum FileFormat {
     Csv,
     Xml,
     Yaml,
+    Custom,
 }
 
 /// Options for configuring storage behavior. Some file 
@@ -33,6 +35,7 @@ pub enum FileFormat {
 /// * `append` - Whether to append to the file if it already exists. Defaults to `false`.
 /// * `compress` - Whether to compress the output file. Defaults to `false`.
 /// * `encoding` - The encoding to use for the output file (e.g., "UTF-8", "ASCII"). Defaults to `Encoding::Utf8`.
+
 pub struct StorageOptions {
     pub file_name: String,
     pub file_format: Option<FileFormat>,
@@ -44,6 +47,7 @@ pub struct StorageOptions {
     // pub custom_data_patterns: Option<Vec<String>>, // List of custom data extraction patterns
     pub pretty_print: Option<bool>, // For JSON and XML formats
     pub delimiter: Option<String>, // For CSV format
+    pub custom_data_storage: Option<fn(&String)>, // Only for custom file formats
 }
 
 impl StorageOptions  {
@@ -58,6 +62,7 @@ impl StorageOptions  {
             // include_metadata: None,
             pretty_print: None,
             delimiter: None,
+            custom_data_storage: None,
         }
     } 
 }
@@ -79,19 +84,26 @@ impl<'a> ScraperGenerator<'a> {
 }
 
 pub fn store(data: &Vec<String>, options: &StorageOptions) -> Result<(), io::Error> {
-    
-    let mut file = File::create(&options.file_name)?;
-
     let content_iter: Box<dyn Iterator<Item = String>> = match options.file_format.as_ref().unwrap_or(&FileFormat::Txt) {
         FileFormat::Txt => Box::new(txt::ScraperTxtGenerator::new(data, &options)),
         FileFormat::Json => Box::new(json::ScraperJSONGenerator::new(data, &options)),
         FileFormat::Csv => Box::new(csv::ScraperCSVGenerator::new(data, &options)),
         FileFormat::Xml => Box::new(xml::ScraperXMLGenerator::new(data, &options)),
         FileFormat::Yaml => Box::new(yaml::ScraperYAMLGenerator::new(data, &options)),
+        FileFormat::Custom => Box::new(custom::CustomDataGenerator::new(data, &options)),
     };
 
-    for line in content_iter {
-        file.write_all(line.as_bytes())?;
+    match options.file_format.as_ref().unwrap_or(&FileFormat::Txt) {
+        FileFormat::Custom =>{
+            for _ in content_iter{}
+        },
+        _ =>{
+            let mut file = File::create(&options.file_name)?;
+        
+            for line in content_iter {
+                file.write_all(line.as_bytes())?;
+            }
+        }
     }
 
     Ok(())

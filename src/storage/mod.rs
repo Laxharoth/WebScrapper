@@ -5,3 +5,4 @@ mod json;
 mod csv;
 mod xml;
 mod yaml;
+mod custom;
